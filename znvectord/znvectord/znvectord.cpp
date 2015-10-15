@@ -26,7 +26,22 @@ public:
 
     // *** 
     IndexType dim() { return dims_; }
-    ZnVectorD& resize(int32_t newSize);
+
+    // изменение размера вектора
+    ZnVectorD& resize(IndexType newSize)
+    {
+        if (newSize > 0 && newSize != dims_) {
+            ZnVectorD tmp(newSize);
+            for (IndexType i{ 0 }; i < (dims_ > newSize ? newSize : dims_); i += 1)
+            {
+                tmp.data_[i] = data_[i];
+            }
+            swap(tmp);
+            tmp.dims_ = 0;
+            tmp.data_ = nullptr;
+        }
+        return *this;
+    }
 
     std::ostream& print(std::ostream& ostrm) const;
 
@@ -85,9 +100,17 @@ int main()
     cout << " v3 = " << v3 << endl;  
     ZnVectorD v4{ v1 };
     cout << " v4 = " << v4 << endl;
+    v4.resize(9);
+    cout << " resize(9) v4 = " << v4 << endl;
+    v4.resize(3);
+    cout << " resize(3) v4 = " << v4 << endl;
+    v4.resize(0);
+    cout << " resize(0) v4 = " << v4 << endl;
+    v4.resize(-1);
+    cout << "resize(-1) v4 = " << v4 << endl;
     ZnVectorD v5{ (v1 + v4) };
     cout << " v5 = " << v5 << endl;
-
+   
     // присваивание
     v3 = v2;
     cout << " v3 = v2 -> " << v3 << endl << endl;
@@ -148,12 +171,6 @@ ZnVectorD::~ZnVectorD()
 { 
     delete[] data_; 
 } 
-
-ZnVectorD& resize(int32_t newSize)
-{
-    ZnVectorD tmp;
-    return tmp;
-}
 
 ZnVectorD& ZnVectorD::operator=(const ZnVectorD& arr) 
 { 
