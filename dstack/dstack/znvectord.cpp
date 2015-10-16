@@ -1,150 +1,16 @@
+#include "znvectord.h" 
+
 #include <cassert>
 #include <algorithm>
 #include <stdexcept>
 #include <iostream> // ***
-#include <cstddef>
-#include <cstdint> 
-#include <initializer_list>
-#include <memory> 
 
-using ValueType = int32_t;
-using IndexType = ptrdiff_t;
-
-class ZnVectorD 
-{ 
-public: 
-    ZnVectorD() = default;
-    ZnVectorD(const IndexType dims);
-    ZnVectorD(std::initializer_list<ValueType> list); 
-    ZnVectorD(const ZnVectorD& vec); 
-    ZnVectorD(ZnVectorD&& vec); 
-
-    ~ZnVectorD();
-
-    ZnVectorD& operator=(const ZnVectorD& vec); 
-    ZnVectorD& operator=(ZnVectorD&& vec); 
-
-    // *** 
-    IndexType dim() { return dims_; }
-
-    // изменение размера вектора
-    ZnVectorD& resize(IndexType newSize)
-    {
-        if (newSize > 0 && newSize != dims_) {
-            ZnVectorD tmp(newSize);
-            for (IndexType i{ 0 }; i < (dims_ > newSize ? newSize : dims_); i += 1)
-            {
-                tmp.data_[i] = data_[i];
-            }
-            swap(tmp);
-            tmp.dims_ = 0;
-            tmp.data_ = nullptr;
-        }
-        return *this;
-    }
-
-    std::ostream& print(std::ostream& ostrm) const;
-
-    ZnVectorD operator-();
-    ZnVectorD& operator+=(const ZnVectorD& rhs); 
-    ZnVectorD& operator+=(const ValueType rhs); 
-    ZnVectorD& operator-=(const ZnVectorD& rhs); 
-    ZnVectorD& operator-=(const ValueType rhs); 
-    ZnVectorD& operator*=(const ValueType rhs); 
-    ZnVectorD& operator/=(const ValueType rhs); 
-
-    ValueType& operator[](const IndexType index); 
-    const ValueType& operator[](const IndexType index) const;
-
-    ValueType* begin() { return data_; } 
-    ValueType* end() { return data_ + dims_; } 
-    const ValueType* cbegin() { return data_; } 
-    const ValueType* cend() { return data_ + dims_; } 
-
-private: 
-    IndexType  dims_{0}; 
-    ValueType* data_{nullptr}; 
-private: 
-    void swap(ZnVectorD& arr); 
-}; 
-
-// *** 
-ZnVectorD operator+(ZnVectorD& lhs, ZnVectorD& rhs);
-ZnVectorD operator+(ZnVectorD& lhs, const ValueType rhs);
-ZnVectorD operator-(ZnVectorD& lhs, ZnVectorD& rhs);
-ZnVectorD operator-(ZnVectorD& lhs, const ValueType rhs);
-ZnVectorD operator*(ZnVectorD& lhs, const ValueType rhs);
-ZnVectorD operator*(const ValueType lhs, ZnVectorD& rhs);
-ZnVectorD operator/(ZnVectorD& lhs, const ValueType rhs);
-
-bool operator==(ZnVectorD& lhs, ZnVectorD& rhs);
-bool operator!=(ZnVectorD& lhs, ZnVectorD& rhs);
-
-std::ostream& operator<<(std::ostream& ostrm, const ZnVectorD& v);
-
-//===============================================================
-
-using namespace std;
-
-int main() 
-{ 
-	// TODO 
-    // конструкторы
-    ZnVectorD v0;
-    cout << " v0 = " << v0 << endl; 
-    ZnVectorD v1{1,2,3,4};
-    ZnVectorD v2{-1,-2,-3,-4,-5,-6 };
-    cout << " v1 = " << v1 << endl; // *** 
-    cout << " v2 = " << v2 << endl; // *** 
-    ZnVectorD v3(8);
-    cout << " v3 = " << v3 << endl;  
-    ZnVectorD v4{ v1 };
-    cout << " v4 = " << v4 << endl;
-    v4.resize(9);
-    cout << " resize(9) v4 = " << v4 << endl;
-    v4.resize(3);
-    cout << " resize(3) v4 = " << v4 << endl;
-    v4.resize(0);
-    cout << " resize(0) v4 = " << v4 << endl;
-    v4.resize(-1);
-    cout << "resize(-1) v4 = " << v4 << endl;
-    ZnVectorD v5{ (v1 + v4) };
-    cout << " v5 = " << v5 << endl;
-   
-    // присваивание
-    v3 = v2;
-    cout << " v3 = v2 -> " << v3 << endl << endl;
-    // сравнение
-    cout << v1 << " == " << v4 << " -> " << boolalpha << (v1 == v4) << endl;
-    cout << v1 << " == " << -v3 << " -> " << boolalpha << (v1 == (-v3)) << endl;
-    cout << v2 << " != " << v3 << " -> " << boolalpha << (v2 != v3) << endl << endl;
-    // сложение векторов
-    cout << v2 << " + " << v3 << " -> " << (v2 + v3) << endl;
-    cout << v1 << " + " << v2 << " -> " << (v1 + v2) << endl;
-    // сложение вектора и числа
-    cout << v2 << " + " << 3 << " -> " << (v2 + 3) << endl << endl;
-    // вычитание векторов
-    cout << v3 << " - " << v1 << " -> " << (v3 - v1) << endl;
-    cout << v3 << " - " << v2 << " -> " << (v3 - v2) << endl;
-    // вычитание вектора и числа
-    cout << v3 << " - " << 2 << " -> " << (v3 - 2) << endl << endl;
-    // умножение вектора на число
-    cout << v1 << " * " << 3 << " -> " << (v1 * 3) << endl;
-    cout << 3 << " * " << v2 << " -> " << (3 * v2) << endl << endl;
-    // деление вектора на число
-    cout << v2 << " / " << 2 << " -> " << (v2 / 2) << endl;
-
-    return 0;
-}
-
-//=================================================================
+using namespace std; 
 
 ZnVectorD::ZnVectorD(const IndexType dims) 
     : dims_{dims} 
 { 
-    data_ = new ValueType[dims_];
-    //data_ = new ValueType[dims_]{ 0 };
-
+    data_ = new ValueType[dims_]{0};
 } 
 
 ZnVectorD::ZnVectorD(const ZnVectorD& vec) 
