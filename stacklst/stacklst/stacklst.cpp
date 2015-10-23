@@ -46,7 +46,7 @@ public:
         cout << "[" << itop << "/" << data.GetCount() << "] <bottom: ";
         for (int ix = 0; ix < itop; ++ix)
         {
-            cout << *(data.GetHead() + ix) << " ";
+            cout << *(data.GetHead() + ix).Print() << " ";
         }
         cout << " :top >" << endl;
     }
