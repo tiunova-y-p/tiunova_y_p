@@ -8,7 +8,7 @@ class stack
 {
 public:
     stack()
-        : itop{ 0}, data(1) 
+        : itop{ 0 }, data()
     {
     }
 
@@ -33,22 +33,23 @@ public:
     {
         return 0 == itop;
     }
-    void pop()
+
+    ValueType pop()
     {
         if (!isempty())
         {
-            itop--;
+            --itop;
+            ValueType v = data[itop];
+            data.Del();
+            return v;
         }
+        else return 0;
     }
 
     void print()
     {
-        cout << "[" << itop << "/" << data.GetCount() << "] <bottom: ";
-        for (int ix = 0; ix < itop; ++ix)
-        {
-            cout << *(data.GetHead() + ix).Print() << " ";
-        }
-        cout << " :top >" << endl;
+        if (itop != 0) data.Print();
+        else cout << "Stack isEmpty" << endl;
     }
 
 private:
@@ -71,8 +72,7 @@ int main()
     s.print();
     cout << "Proverim pustotu steka (1 mean true): " << s.isempty() << endl;
     s.print();
-    cout << " pop " << endl;
-    s.pop();
+    cout << " pop " << s.pop() << endl;
     cout << "Proverim pustotu steka (1 mean true): " << s.isempty() << endl;
     s.print();
 

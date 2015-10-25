@@ -1,102 +1,173 @@
 #include "unilist.h" 
-#include <iostream> 
+#include <iostream>
+#include <cstddef>
+#include <cstdint> 
+#include <initializer_list>
+#include <memory> 
 
 using namespace std;
 
-UniList::UniList() :  count_{0}
+UniList::UniList(int len)
 {
+    Node* pfirst = new Node;
+    pfirst->val_ = { 0 };
+    head_ = tail_ = pfirst;
+    for (int ix = 1; ix < len; ++ix)
+    {
+        Node* pnode = new Node;
+        pnode->val_ = { 0 };
+        tail_->next_ = pnode;
+        tail_ = pnode;
+    }
 }
 
-UniList::~UniList()
+UniList::UniList (std::initializer_list<ValueType> vals)
 {
-    Clearlist(); //Функция освобождает память, используемую для хранения списка
+    Node* pfirst = new Node;
+    pfirst->val_ = (*vals.begin());
+    head_ = tail_ = pfirst;
+    for (auto ix = vals.begin() + 1; ix < vals.end(); ++ix)
+    {
+        Node* pnode = new Node;
+        pnode->val_ = (*ix);
+        tail_->next_ = pnode;
+        tail_ = pnode;
+    }
 }
 
-int UniList::GetCount() const //Возвращает количество элементов в списке
+//Деструктор
+UniList :: ~UniList ()
 {
-    return count_;
+    if (head_ != nullptr)
+    {
+        Node* pnode = head_;
+        while (pnode)
+        {
+            pnode = pnode->next_;
+            delete head_;
+            head_ = pnode;
+        }
+    }
 }
-
-int UniList::IncCount() 
+//Проверка списков на равенство
+bool UniList::operator==(const UniList& l)
 {
-    return count_ += 1;
+    Node* pnode = head_;
+    Node* plnode = l.head_;
+    while ((pnode) && (plnode))
+    {
+        if (pnode->val_ != plnode->val_) return false;
+        pnode = pnode->next_;
+        plnode = plnode->next_;
+    }
+    return true;
 }
 
-void SetCount(int c)
+//Проверка списков на неравенство
+bool UniList::operator!=(const UniList& l)
 {
-    count_ = c;
+    Node* pnode = head_;
+    Node* plnode = l.head_;
+    while ((pnode) && (plnode))
+    {
+        if (pnode->val_ == plnode->val_) return false;
+        pnode = pnode->next_;
+        plnode = plnode->next_;
+    }
+    return true;
 }
 
-node* UniList::GetHead() const
+//Перегрузка операции присваивания
+UniList& UniList::operator=(const UniList& l)
 {
-	return head_;
-}
+    this->~UniList();               //Уничтожаем старое содержимое списка
+    Node* pfirst = new Node;        //Создаем первый узел списка, куда будет копироваться список l
+    pfirst->val_ = l.head_->val_;   //Копируем значение данных из первого узла
+    head_ = tail_ = pfirst;         //Указатели головы и хвоста устанавливаем на первый узел
+    Node* plnode = l.head_->next_;  //
+    while (plnode)
+    { 
+        Node* pnode = new Node;
+        pnode->val_ = plnode->val_;
+        tail_->next_ = pnode;
+        tail_ = pnode;
+        plnode = plnode->next_;
+    };
+    return (*this);
+};
 
-int UniList::Add(ValueType v)  const //Добавление элемента в конец списка. Возвращает количество элементов в списке
+//Перегрузка операции [] -доступ к элементу в заданной позиции
+ValueType& UniList::operator[](const IndexType index)
 {
-	node* to_add = new node;
-	(*to_add).setval(v);
-    (*to_add).setnext(nullptr);
+    if ((index < 0) || ((*this).IsEmpty()))
 
-	node* current = GetHead();
-	while ((*current).next() != nullptr)
-	{
-		current = (*current).next();
-	}
-    (*current).setnext(to_add);
 
-    (*this).SetCount(1);
+    {
+        throw out_of_range("index out of range in UniList::operator[]");
+    }
 
-	return count_;
+    Node* pnode = head_;
+    for (IndexType i = 0; i < index; ++i)
+    {
+        pnode = pnode->next_;
+    }
+    return pnode->val_;
 }
 
-int UniList::Del() const //Удаление элемента из списка. Возвращает количество элементов в списке. 
-{			   //Возвращает -1, если произошла ошибка
-	//if (x>count) return -1;
-	//node* to_del=head;
-	//if (x==1) //Если нужно удалить первый элемент
-	//{
-	//	head=head.next();
-	//	delete to_del;
-	//}
-	//else
-	//{
-	//	node* current=head;
-	//	for(int i=1;i<x-1;i++)
-	//		current=current.next();
-	//	to_del=current.next();
-	//	current.next()=current.next().next();
-	//	delete to_del;
-	//}
-	//count--;
-	//return count;
-}
-	
-void UniList::Clearlist() const//Очистка списка
+bool UniList::IsEmpty()
 {
-	//node* current = head;
-	//node* to_del = head;
-	//while(to_del!=nullptr)
-	//{
-	//	current=current.next();
-	//	delete to_del;
-	//	to_del=current;
-	//}
-	//head=nullptr;
-	//count=0;
-}
-	
-ValueType UniList::Last() const //Возвращает данные из списка.
-{
-	//node* current;
-	//for(current=head;x>1;x--)
-	//	current=current.next();
-	//return current.val();
+    return head_ == nullptr;
 }
 
-std::ostream& Print(std::ostream& ostrm) const
+void UniList::Add(ValueType v)
 {
-    return ostrm;
+    Node* pnode = new Node;
+    pnode->val_ = v;
+    if (this->IsEmpty())
+    {
+        head_ = tail_ = pnode;
+    }
+    else
+    {
+        tail_->next_ = pnode;
+        tail_ = pnode;
+    }
 }
 
+void UniList::Del()
+{
+    if (head_ != nullptr)
+    {
+        Node* pnode = head_;
+        while ((pnode->next_ != tail_) && (pnode->next_ != nullptr))
+        {
+            pnode = pnode->next_;
+        }
+        if (head_->next_ != nullptr)
+        {
+            delete tail_;
+            tail_ = pnode;
+            pnode->next_ = nullptr;
+        }
+        else
+        {
+            head_ = nullptr;
+            delete tail_;
+            tail_ = head_;
+        }
+    }
+}
+
+//просмотра всего списка
+void UniList::Print()
+{
+    Node* pnode = head_;
+    cout << endl << "UniList: <";
+    while (pnode)
+    {
+        cout << pnode->val_ << ' ';
+        pnode = pnode->next_;
+    }
+    cout << ">" << endl;
+}
 
