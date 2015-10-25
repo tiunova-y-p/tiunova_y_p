@@ -37,12 +37,14 @@ public:
     {
         return 0 == itop;
     }
-    void pop()
+    ValueType pop()
     {
         if (!isempty())
         {
-            itop--;
+            //itop--;
+            return *(data.begin() + --itop);
         }
+        else return 0;
     }
 
     void print()
@@ -75,8 +77,7 @@ int main()
     s.print();
     cout << "Proverim pustotu steka (1 mean true): " << s.isempty() << endl;
     s.print();
-    cout << " pop " << endl;
-    s.pop();
+    cout << " pop " << s.pop() << endl;
     cout << "Proverim pustotu steka (1 mean true): " << s.isempty() << endl;
     s.print();
 
