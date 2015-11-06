@@ -1,22 +1,25 @@
 #include "unilist.h" 
-#include <stdexcept>
+//#include <stdexcept>
 #include <iostream>
 
 using namespace std;
 
-class stack
+class Stacklst
 {
+    using ValueType = int32_t;
+    using IndexType = ptrdiff_t;
+
 public:
-    stack()
-        : itop{ 0 }, data()
+    Stacklst::Stacklst()
+        : itop{ 0 }, data{}   //*** +
     {
     }
 
-    ~stack()
+    Stacklst::~Stacklst()
     {
     }
 
-    void push(const double v)
+    void Stacklst::push(const ValueType v)
     {
         if (itop == MAX_STACK_SIZE) 
         {
@@ -24,32 +27,59 @@ public:
         }
         else 
         {
-            data.Add(v); //добавление в стек элемента массива
+            data.add(v); //добавление в стек элемента массива
             itop++;
         }
     }
 
-    bool isempty()
+    bool Stacklst::isempty() const
     {
         return 0 == itop;
     }
 
-    ValueType pop()
+    ValueType Stacklst::pop()
     {
         if (!isempty())
         {
-            --itop;
-            ValueType v = data[itop];
-            data.Del();
+            //--itop;
+            ValueType v = data[itop--];
+            data.del();
             return v;
         }
-        else return 0;
+        else
+        {
+            throw domain_error("Empty stack!");
+            return 0;
+        }
     }
 
-    void print()
+    ValueType Stacklst::getTop()
     {
-        if (itop != 0) data.Print();
+        if (!isempty())
+        {
+            return data[itop];
+        }
+        else
+        {
+            throw domain_error("Empty top !");
+            return 0;
+        }
+    }
+
+    void Stacklst::print()
+    {
+        if (itop != 0) data.print();
         else cout << "Stack isEmpty" << endl;
+    }
+
+    void Stacklst::clear()
+    {
+        if (itop != 0)
+        {
+            data.clear();
+            itop = 0;
+        }
+        cout << "Clear Stack" << endl;
     }
 
 private:
@@ -58,28 +88,42 @@ private:
     IndexType itop{ 0 };// индекс
 };
 
+//===============================================================================
+
 int main()
 {
-    stack s;
-    cout << "Proverim pustotu steka (1 mean true): " << s.isempty() << endl;
+    Stacklst s;
+    //cout << "Proverim pustotu steka (1 mean true): " << s.isempty() << endl;
     s.print();
+    cout << endl;
+
     cout << " push 4 6 " << endl;
     s.push(4);
     s.push(6);
     s.print();
+    cout << endl;
+
     cout << " push 5 " << endl;
     s.push(5);
     s.print();
-    cout << "Proverim pustotu steka (1 mean true): " << s.isempty() << endl;
+    //cout << "Proverim pustotu steka (1 mean true): " << s.isempty() << endl;
+    cout << "Top: " << s.getTop() << endl;
+    cout << endl;
+
+    cout << " pop() ==> " << s.pop() << endl;
+    //cout << "Proverim pustotu steka (1 mean true): " << s.isempty() << endl;
     s.print();
-    cout << " pop " << s.pop() << endl;
-    cout << "Proverim pustotu steka (1 mean true): " << s.isempty() << endl;
+    cout << "Top: " << s.getTop() << endl;
+    cout << endl;
+
+    s.clear();
     s.print();
+    cout << endl;
 
     try 
     {
-        cout << "Push 7 times" << endl;
-        for (int j = 0; j < 7; j++)
+        cout << "Push 0 ... 8" << endl;
+        for (int j = 0; j < 9; j++)
         {
             s.push(j);
             s.print();
@@ -89,13 +133,35 @@ int main()
     {
         cout << "Exception caught (" << e.what() << ')' << endl;
     };
+    cout << "Top: " << s.getTop() << endl;
+    cout << endl;
+
     cout << "Pop 10 times" << endl;
     s.print();
-    for (int j = 0; j < 10; j++)
+
+    try
     {
-        s.pop();
-        s.print();
+        for (int j = 0; j < 10; j++)
+        {
+            s.pop();
+            s.print();
+        }
     }
+    catch (domain_error& e)
+    {
+        cout << "Exception caught (" << e.what() << ')' << endl;
+    };
+    cout << endl;
+
+    cout << "Top: ";
+    try
+    {
+        cout << s.getTop() << endl;
+    }
+    catch (domain_error& e)
+    {
+        cout << "Exception caught (" << e.what() << ')' << endl;
+    };
 
     return 0;
 }
