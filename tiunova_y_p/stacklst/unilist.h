@@ -1,8 +1,6 @@
 #ifndef UNILIST_H_20151023
 #define UNILIST_H_20151023 
 
-//#include <cstddef>
-//#include <cstdint> 
 #include <iostream>
 #include <initializer_list>
 #include <memory> 
