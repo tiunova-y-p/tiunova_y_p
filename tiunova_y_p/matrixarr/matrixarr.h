@@ -1,7 +1,6 @@
 #ifndef MATRIXARR_H_20151106
 #define MATRIXARR_H_20151106 
 
-//#include <initializer_list>
 #include <memory> 
 
 class MatrixArr  
@@ -14,26 +13,25 @@ public:
     MatrixArr(const IndexType rows, const IndexType cols);
     MatrixArr(const IndexType rows, const IndexType cols, std::initializer_list<ValueType> list);
     MatrixArr(const MatrixArr& m) = delete; 
-    MatrixArr(MatrixArr&& vec) = delete; 
+    MatrixArr(MatrixArr&& m) = delete; 
 
     ~MatrixArr();
 
     MatrixArr& operator=(const MatrixArr& m) = delete; 
     MatrixArr& operator=(MatrixArr&& m) = delete; 
     
-    // *** 
     IndexType nRows() { return rows_; }
     IndexType nCols() { return cols_; }
 
     ValueType* begin() { return data_; }
     ValueType* end() { return data_ + rows_*cols_; }
 
+    MatrixArr& transpose();
+
     std::ostream& print(std::ostream& ostrm) const;
 
     MatrixArr& operator-();
-    //MatrixArr& operator+=(const MatrixArr& rhs); 
     MatrixArr& operator+=(const ValueType rhs); 
-    //MatrixArr& operator-=(const MatrixArr& rhs); 
     MatrixArr& operator-=(const ValueType rhs); 
     MatrixArr& operator*=(const ValueType rhs); 
 
@@ -50,12 +48,8 @@ private:
 }; 
 
 MatrixArr& operator+(MatrixArr& lhs, MatrixArr& rhs);
-//MatrixArr operator+(MatrixArr& lhs, const ValueType rhs);
-//MatrixArr operator-(MatrixArr& lhs, MatrixArr& rhs);
-//MatrixArr operator-(MatrixArr& lhs, const ValueType rhs);
-//MatrixArr operator*(MatrixArr& lhs, const ValueType rhs);
-//MatrixArr operator*(const ValueType lhs, MatrixArr& rhs);
-//MatrixArr operator*(MatrixArr& lhs, MatrixArr& rhs);
+MatrixArr& operator-(MatrixArr& lhs, MatrixArr& rhs);
+MatrixArr& operator*(MatrixArr& lhs, MatrixArr& rhs);
 
 bool operator==(MatrixArr& lhs, MatrixArr& rhs);
 bool operator!=(MatrixArr& lhs, MatrixArr& rhs);
@@ -63,5 +57,3 @@ bool operator!=(MatrixArr& lhs, MatrixArr& rhs);
 std::ostream& operator<<(std::ostream& ostrm, const MatrixArr& v);
 
 #endif //  MATRIXARR_H_2015110
-
-

@@ -28,6 +28,22 @@ MatrixArr::~MatrixArr()
     delete[] data_; 
 } 
 
+MatrixArr& MatrixArr::transpose()
+{
+    MatrixArr t( cols_, rows_ );
+ 
+    for (IndexType i{ 0 }; i != rows_; ++i)
+    {
+        for (IndexType j{ 0 }; j != cols_; ++j)
+        {
+            t.data_[j*rows_ + i] = data_[i*cols_ + j];
+        }
+    }
+    swap(t);
+
+    return *this;
+}
+
 std::ostream& MatrixArr::print(std::ostream& ostrm) const
 {
     cout << endl;
@@ -49,7 +65,7 @@ std::ostream& MatrixArr::print(std::ostream& ostrm) const
 
 ValueType& MatrixArr::operator()(const IndexType irow, const IndexType icol)
 {
-    assert(irow >= 0 && irow < rows_ && icol >= 0 && icol < cols_);
+    //assert(irow >= 0 && irow < rows_ && icol >= 0 && icol < cols_);
     if ((irow < 0) || (rows_ <= irow) || (icol < 0) || (cols_ <= icol))
     { 
         throw out_of_range("index out of range in MatrixArr::operator()"); 
@@ -59,7 +75,6 @@ ValueType& MatrixArr::operator()(const IndexType irow, const IndexType icol)
 
 const ValueType& MatrixArr::operator()(const IndexType irow, const IndexType icol) const
 { 
-    assert(irow >= 0 && irow < rows_ && icol >= 0 && icol < cols_);
     if ((irow < 0) || (rows_ <= irow) || (icol < 0) || (cols_ <= icol))
     {
         throw out_of_range("index out of range in MatrixArr::operator()");
@@ -99,18 +114,6 @@ MatrixArr& MatrixArr::operator-()
     return *this; 
 } 
 
-//MatrixArr& MatrixArr::operator+=(const MatrixArr& rhs) 
-//{ 
-//    // TODO 
-//    for (IndexType i{ 0 }; i != rows_; ++i)
-//    {
-//        for (IndexType j{ 0 }; j < cols_; j += 1)
-//        {
-//            data_[i][j] += rhs.data_[i][j];
-//    }
-//    return *this; 
-//} 
-
 MatrixArr& MatrixArr::operator+=(const ValueType rhs) 
 { 
     for (IndexType i{ 0 }; i != rows_; ++i)
@@ -122,15 +125,6 @@ MatrixArr& MatrixArr::operator+=(const ValueType rhs)
     }
     return *this;
 } 
-
-//MatrixArr& MatrixArr::operator-=(const MatrixArr& rhs) 
-//{ 
-//    for (IndexType i{0}; i != dims_; ++i) 
-//    { 
-//        data_[i] -= rhs.data_[i]; 
-//    } 
-//    return *this; 
-//} 
 
 MatrixArr& MatrixArr::operator-=(const ValueType rhs) 
 { 
@@ -156,11 +150,13 @@ MatrixArr& MatrixArr::operator*=(const ValueType rhs)
     return *this;
 } 
 
-// оператор сложения
+// оператор сложения матриц
 MatrixArr& operator+(MatrixArr& lhs, MatrixArr& rhs)
 {
     IndexType  r = rhs.nRows();
     IndexType  c = rhs.nCols();
+
+    MatrixArr summ( r, c );
 
     if ((lhs.nRows() == r) && (lhs.nCols() == c))
     {
@@ -168,10 +164,12 @@ MatrixArr& operator+(MatrixArr& lhs, MatrixArr& rhs)
         {
             for (IndexType j{ 0 }; j != c; ++j)
             {
-                (*(lhs.begin() + i*c + j) += *(rhs.begin() + i*c + j));
+                (*(summ.begin() + i*c + j)) = (*(lhs.begin() + i*c + j)) + (*(rhs.begin() + i*c + j));
             }
         }
-        return lhs;
+        summ.print(cout);
+        return summ;
+        //return lhs;
     }
     try {
         throw std::runtime_error("Error: ");
@@ -180,33 +178,68 @@ MatrixArr& operator+(MatrixArr& lhs, MatrixArr& rhs)
         cout << "Mismatch MatrixArr dimensions: ";
     }
     return lhs;
-};
+}
 
-/*
-MatrixArr operator+(MatrixArr& lhs, const ValueType rhs) { return MatrixArr(lhs) += rhs; }
-
-// оператор разности
-MatrixArr operator-(MatrixArr& lhs, MatrixArr& rhs)
+// оператор вычитания матриц
+MatrixArr& operator-(MatrixArr& lhs, MatrixArr& rhs)
 {
+    IndexType  r = rhs.nRows();
+    IndexType  c = rhs.nCols();
 
-    if (lhs.dim() == rhs.dim()) return MatrixArr(lhs) -= rhs;
+    MatrixArr subt(r, c);
 
+    if ((lhs.nRows() == r) && (lhs.nCols() == c))
+    {
+        for (IndexType i{ 0 }; i != r; ++i)
+        {
+            for (IndexType j{ 0 }; j != c; ++j)
+            {
+                (*(subt.begin() + i*c + j)) = (*(lhs.begin() + i*c + j)) - (*(rhs.begin() + i*c + j));
+            }
+        }
+        subt.print(cout);
+        return subt;
+    }
     try {
-        throw std::runtime_error("Mismatch MatrixArr dimensions");
+        throw std::runtime_error("Error: ");
     }
     catch (const std::runtime_error & e) {
         cout << "Mismatch MatrixArr dimensions: ";
     }
     return lhs;
-};
+}
 
-MatrixArr operator-(MatrixArr& lhs, const ValueType rhs) { return MatrixArr(lhs) -= rhs; }
-// оператор умножения вектора на число
-MatrixArr operator*(MatrixArr& lhs, const ValueType rhs) { return MatrixArr(lhs) *= rhs; }
-MatrixArr operator*(const ValueType lhs, MatrixArr& rhs) { return MatrixArr(rhs) *= lhs; }
-// оператор деления вектора на число
-MatrixArr operator/(MatrixArr& lhs, const ValueType rhs) { return MatrixArr(lhs) /= rhs; }
-*/
+// оператор умножения матриц
+MatrixArr& operator*(MatrixArr& lhs, MatrixArr& rhs)
+{
+    IndexType  r = lhs.nRows();
+    IndexType  c = rhs.nCols();
+
+    MatrixArr mult(r, c);
+
+    if (lhs.nCols() == rhs.nRows())
+    {
+        for (IndexType i{ 0 }; i != r; ++i)
+        {
+            for (IndexType k{ 0 }; k != c; ++k)
+            {
+                for (IndexType j{ 0 }; j != rhs.nRows(); ++j)
+                {
+                    (*(mult.begin() + i*c + k)) += (*(lhs.begin() + i*lhs.nCols() + j)) * (*(rhs.begin() + j*c + k));
+                }
+            }
+        }
+        mult.print(cout);
+        return mult;
+    }
+    try {
+        throw std::runtime_error("Error: ");
+    }
+    catch (const std::runtime_error & e) {
+        cout << "No concurrent matrix: ";
+    }
+    return lhs;
+}
 
 // оператор равенства
 bool operator==(MatrixArr& lhs, MatrixArr& rhs)
@@ -220,7 +253,7 @@ bool operator==(MatrixArr& lhs, MatrixArr& rhs)
         {
             for (IndexType j{ 0 }; j != c; ++j)
             {
-                if (*(lhs.begin() + i*c + j) != *(rhs.begin() + i*c + j));
+                if (*(lhs.begin() + i*c + j) != *(rhs.begin() + i*c + j))
                 {
                     return false;
                 }
