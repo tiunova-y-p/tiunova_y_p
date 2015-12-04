@@ -14,7 +14,7 @@ template <typename IndexType, typename ValueType>
 ZnVectorT<IndexType, ValueType> operator+(ZnVectorT<IndexType, ValueType>& lhs, const ValueType rhs);
 
 template <typename IndexType, typename ValueType>
-ZnVectorT<IndexType, ValueType>& operator-(ZnVectorT<IndexType, ValueType>& v);
+ZnVectorT<IndexType, ValueType> operator-(ZnVectorT<IndexType, ValueType>& v);
 
 template <typename IndexType, typename ValueType>
 ZnVectorT<IndexType, ValueType> operator-(ZnVectorT<IndexType, ValueType>& lhs, ZnVectorT<IndexType, ValueType>& rhs);
@@ -76,7 +76,7 @@ public:
 
     friend ZnVectorT<IndexType, ValueType> operator+ <typename IndexType, typename ValueType> (ZnVectorT<IndexType, ValueType>& lhs, ZnVectorT<IndexType, ValueType>& rhs);
     friend ZnVectorT<IndexType, ValueType> operator+ <typename IndexType, typename ValueType> (ZnVectorT<IndexType, ValueType>& lhs, const ValueType rhs);
-    friend ZnVectorT<IndexType, ValueType>& operator- <typename IndexType, typename ValueType> (ZnVectorT<IndexType, ValueType>& v);
+    friend ZnVectorT<IndexType, ValueType> operator- <typename IndexType, typename ValueType> (ZnVectorT<IndexType, ValueType>& v);
     friend ZnVectorT<IndexType, ValueType> operator- <typename IndexType, typename ValueType> (ZnVectorT<IndexType, ValueType>& lhs, ZnVectorT<IndexType, ValueType>& rhs);
     friend ZnVectorT<IndexType, ValueType> operator- <typename IndexType, typename ValueType> (ZnVectorT<IndexType, ValueType>& lhs, const ValueType rhs);
     friend ZnVectorT<IndexType, ValueType> operator* <typename IndexType, typename ValueType> (ZnVectorT<IndexType, ValueType>& lhs, const ValueType rhs);

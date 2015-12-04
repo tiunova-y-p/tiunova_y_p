@@ -188,7 +188,7 @@ ZnVectorT<IndexType, ValueType> operator+(ZnVectorT<IndexType, ValueType>& lhs, 
 }
 
 template<typename IndexType, typename ValueType>
-ZnVectorT<IndexType, ValueType>& operator-(ZnVectorT<IndexType, ValueType>& v)
+ZnVectorT<IndexType, ValueType> operator-(ZnVectorT<IndexType, ValueType>& v)
 {
     for (IndexType i{ 0 }; i < v.dim(); i += 1)
     {
