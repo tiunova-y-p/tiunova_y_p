@@ -15,16 +15,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="matrixnec.cpp">
+    <ClCompile Include="cv_imgtransform.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="matrixnectest.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="matrixnec.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
