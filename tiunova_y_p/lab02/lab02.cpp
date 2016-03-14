@@ -33,7 +33,10 @@ static void CannyThreshold(int, void*)
 
 int main(int argc, char* argv[])
 {
-    img_src = imread(argv[1]);
+    // имя картинки задаётся первым параметром
+    char* filename = (argc == 2 ? argv[1] : "Penguins.jpg");
+
+    img_src = imread(filename);
     if (img_src.empty())
     {
         return -1;
