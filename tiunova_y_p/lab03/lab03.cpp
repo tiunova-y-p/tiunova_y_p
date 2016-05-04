@@ -50,6 +50,29 @@ int main(int argc, char* argv[])
 
     imshow("SyntImage", image3Ñ);
 
+    Mat gray, grad;
+    Mat grad_x, grad_y;
+    Mat abs_grad_x, abs_grad_y;
+
+    cvtColor(image3Ñ, gray, COLOR_RGB2GRAY);
+
+    int ddepth = CV_16S;
+
+    Sobel(gray, grad_x, ddepth, 1, 0, 3, 1, 0, BORDER_DEFAULT);
+    convertScaleAbs(grad_x, abs_grad_x);
+    imshow("Gradient_X", abs_grad_x);
+
+    Sobel(gray, grad_y, ddepth, 0, 1, 3, 1, 0, BORDER_DEFAULT);
+    convertScaleAbs(grad_y, abs_grad_y);
+    imshow("Gradient_Y", abs_grad_y);
+
+    addWeighted(abs_grad_x, 1, abs_grad_y, 1, 0, grad);
+    imshow("Gradient_X+Y", grad);
+
+    Mat graygrad;
+    addWeighted(gray, 1, grad, 1, 0, graygrad);
+    imshow("Gradient_Total", graygrad);
+
     waitKey(0);
 
     return 0;
